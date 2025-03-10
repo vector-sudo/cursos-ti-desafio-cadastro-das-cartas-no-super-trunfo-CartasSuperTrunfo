@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <string.h>
+
+// Estrutura para armazenar os dados da carta
+typedef struct {
+    char estado[50];
+    char codigo[10];
+    char nome[50];
+    int populacao;
+    float area;
+    float pib;
+    int pontos_turisticos;
+    float densidade_populacional;
+    float pib_per_capita;
+} Carta;
+
+// Função para calcular a densidade populacional e o PIB per capita
+void calcularAtributos(Carta *carta) {
+    carta->densidade_populacional = carta->populacao / carta->area;
+    carta->pib_per_capita = carta->pib / carta->populacao;
+}
+
+// Função para comparar as cartas com base em um atributo específico
+void compararCartas(Carta carta1, Carta carta2, char atributo[]) {
+    float valor1, valor2;
+    int menorVence = 0; // Define se o menor valor vence (aplicável apenas para densidade populacional)
+    
+    if (strcmp(atributo, "populacao") == 0) {
+        valor1 = carta1.populacao;
+        valor2 = carta2.populacao;
+    } else if (strcmp(atributo, "area") == 0) {
+        valor1 = carta1.area;
+        valor2 = carta2.area;
+    } else if (strcmp(atributo, "pib") == 0) {
+        valor1 = carta1.pib;
+        valor2 = carta2.pib;
+    } else if (strcmp(atributo, "densidade_populacional") == 0) {
+        valor1 = carta1.densidade_populacional;
+        valor2 = carta2.densidade_populacional;
+        menorVence = 1;
+    } else if (strcmp(atributo, "pib_per_capita") == 0) {
+        valor1 = carta1.pib_per_capita;
+        valor2 = carta2.pib_per_capita;
+    } else {
+        printf("Atributo inválido!\n");
+        return;
+    }
+
+    // Determinar o vencedor
+    printf("\nComparação de cartas (Atributo: %s):\n", atributo);
+    printf("Carta 1 - %s (%s): %.2f\n", carta1.nome, carta1.estado, valor1);
+    printf("Carta 2 - %s (%s): %.2f\n", carta2.nome, carta2.estado, valor2);
+    
+    if ((valor1 > valor2 && !menorVence) || (valor1 < valor2 && menorVence)) {
+        printf("Resultado: Carta 1 (%s) venceu!\n", carta1.nome);
+    } else if ((valor2 > valor1 && !menorVence) || (valor2 < valor1 && menorVence)) {
+        printf("Resultado: Carta 2 (%s) venceu!\n", carta2.nome);
+    } else {
+        printf("Resultado: Empate!\n");
+    }
+}
+
+int main() {
+    // Definição de duas cartas pré-cadastradas
+    Carta carta1 = {"SP", "001", "São Paulo", 12300000, 1521.11, 2200000000000.0, 10};
+    Carta carta2 = {"RJ", "002", "Rio de Janeiro", 6700000, 1200.27, 1500000000000.0, 8};
+    
+    // Calcular atributos das cartas
+    calcularAtributos(&carta1);
+    calcularAtributos(&carta2);
+    
+    // Definição do atributo a ser comparado (pode ser alterado diretamente no código)
+    char atributo[] = "populacao"; // Alterar para "area", "pib", "densidade_populacional", ou "pib_per_capita"
+    
+    // Comparação das cartas
+    compararCartas(carta1, carta2, atributo);
+    
+    return 0;
+}
