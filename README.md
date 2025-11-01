@@ -1,83 +1,117 @@
-# ⚠️ Importante!!!
-Criamos um novo link para o primeiro desafio porque o link original apresentou problemas. Quem já completou o desafio pode continuar usando o link original para enviar seu repositório. Se você ainda não começou o desafio, utilize o novo link.
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
 
-# Desafio Super Trunfo - Países - Cadastro das Cartas
+#define MAX_BLOCKS 10
+#define MAX_HEIGHT 10
 
-Bem-vindo ao desafio "Super Trunfo - Países"! No jogo Super Trunfo, os jogadores comparam as propriedades das cartas para determinar a mais forte. O tema deste Super Trunfo é "Países," onde você comparará as propriedades das cidades.
+typedef struct {
+    char tipo;
+    int tamanho;
+} Bloco;
 
-A empresa MateCheck contratou você para desenvolver a parte inicial do jogo, que consiste no cadastro das cartas.
+Bloco pilha[MAX_BLOCKS];
+int topo = -1;
+int pontuacao = 0;
 
-O desafio está dividido em três níveis: Novato, Aventureiro e Mestre, com cada nível adicionando mais complexidade ao anterior. Você deve escolher qual desafio quer realizar.
+void desenharPilha() {
+    printf("\n=== PILHA ATUAL ===\n");
+    for (int i = topo; i >= 0; i--) {
+        for (int j = 0; j < pilha[i].tamanho; j++) {
+            printf("%c", pilha[i].tipo);
+        }
+        printf("\n");
+    }
+    if (topo == -1)
+        printf("[vazio]\n");
+    printf("====================\n");
+}
 
-### 🚨 Atenção: 
-O nível Novato do desafio é focado apenas no cadastro das cartas, utilizando as funções scanf para ler os dados e printf para exibi-los.
+int pilhaCheia() {
+    return topo == MAX_HEIGHT - 1;
+}
 
-## 🎮 Nível Novato
+int pilhaVazia() {
+    return topo == -1;
+}
 
-No nível Novato, você iniciará criando o sistema básico do jogo Super Trunfo com o tema "Países". As cartas serão divididas por estados, cada um com quatro cidades. 
+void empilhar(Bloco b) {
+    if (pilhaCheia()) {
+        printf("❌ A pilha está cheia! Game Over!\n");
+        printf("Pontuação final: %d\n", pontuacao);
+        exit(0);
+    } else {
+        topo++;
+        pilha[topo] = b;
+        pontuacao += b.tamanho * 10;
+        printf("✅ Bloco empilhado com sucesso!\n");
+    }
+}
 
-Cada país será dividido em oito estados, identificados pelas letras de A a H. Cada estado terá quatro cidades, numeradas de 1 a 4. A combinação da letra do estado e o número da cidade define o código da carta (por exemplo, A01, A02, B01, B02).
+void removerBloco() {
+    if (pilhaVazia()) {
+        printf("⚠️ A pilha está vazia!\n");
+    } else {
+        printf("🧱 Removendo bloco do topo (%c)...\n", pilha[topo].tipo);
+        topo--;
+    }
+}
 
-### 🚩 Objetivo:
-- Criar cartas representando cidades, contendo as seguintes propriedades:
-  - **População**
-  - **Área**
-  - **PIB**
-  - **Número de pontos turísticos**
-  
-### ⚙️ Funcionalidades do Sistema:
-- O sistema permitirá ao usuário cadastrar cartas de cidades, inserindo manualmente os dados via terminal de comando.
-- Após o cadastro, o sistema exibirá os dados de cada cidade de forma clara e organizada.
+Bloco gerarBloco() {
+    Bloco b;
+    int tipo = rand() % 3;
+    switch (tipo) {
+        case 0: b.tipo = '#'; break;
+        case 1: b.tipo = '@'; break;
+        case 2: b.tipo = '='; break;
+    }
+    b.tamanho = (rand() % 5) + 1; // de 1 a 5
+    return b;
+}
 
-### 📥 Entrada e 📤 Saída de Dados:
-- O usuário insere os dados de cada carta interativamente.
-- Após o cadastro, os dados são exibidos com todas as propriedades da cidade, uma por linha.
+void menu() {
+    printf("\n====== TETRIS STACK ======\n");
+    printf("1. Gerar e empilhar bloco\n");
+    printf("2. Remover bloco do topo\n");
+    printf("3. Ver pilha\n");
+    printf("4. Sair\n");
+    printf("===========================\n");
+    printf("Escolha uma opção: ");
+}
 
----
+int main() {
+    srand(time(NULL));
+    int opcao;
 
-## 🛡️ Nível Aventureiro
+    printf("🎮 Bem-vindo ao TETRIS STACK!\n");
+    printf("Objetivo: empilhar blocos o máximo possível sem deixar cair!\n");
 
-No nível Aventureiro, você expandirá o sistema para incluir propriedades calculadas, permitindo uma análise mais detalhada das cartas.
+    while (1) {
+        menu();
+        scanf("%d", &opcao);
+        switch (opcao) {
+            case 1: {
+                Bloco novo = gerarBloco();
+                printf("Novo bloco gerado: %c (tamanho %d)\n", novo.tipo, novo.tamanho);
+                empilhar(novo);
+                desenharPilha();
+                break;
+            }
+            case 2:
+                removerBloco();
+                desenharPilha();
+                break;
+            case 3:
+                desenharPilha();
+                break;
+            case 4:
+                printf("👋 Saindo do jogo...\n");
+                printf("Pontuação final: %d\n", pontuacao);
+                return 0;
+            default:
+                printf("Opção inválida!\n");
+        }
+    }
 
-### 🆕 Diferença em relação ao Nível Novato:
-- **Novas Propriedades Calculadas:**
-  - **Densidade Populacional:** População dividida pela área da cidade.
-  - **PIB per Capita:** PIB total dividido pela população.
-
-### ⚙️ Funcionalidades do Sistema:
-- O sistema agora calculará automaticamente a Densidade Populacional e o PIB per Capita com base nos dados inseridos.
-- Essas novas propriedades serão adicionadas às informações exibidas para cada cidade.
-
-### 📥 Entrada e 📤 Saída de Dados:
-- O usuário continua inserindo os dados de cada carta interativamente.
-- O sistema exibirá os dados, incluindo as novas propriedades calculadas, de forma clara e organizada.
-
----
-
-## 🏆 Nível Mestre
-
-No nível Mestre, você implementará comparações entre as cartas, utilizando operadores relacionais e manipulando grandes números com precisão.
-
-### 🆕 Diferença em relação ao Nível Aventureiro:
-- **Comparação de Cartas:**
-  - O sistema permitirá ao usuário comparar duas cartas com base nas propriedades inseridas e calculadas.
-  - Cada carta terá um "Super Poder", que é a soma de todas as propriedades.
-  
-### ⚙️ Funcionalidades do Sistema:
-- O sistema utilizará operadores relacionais para determinar a carta vencedora com base nas propriedades comparadas.
-- A comparação considerará:
-  - **Densidade Populacional:** Vence a carta com menor valor.
-  - **Outras Propriedades:** Vence a carta com maior valor.
-- O resultado das comparações será exibido claramente para cada propriedade.
-
-### 📥 Entrada e 📤 Saída de Dados:
-- O usuário insere as cartas a serem comparadas.
-- O sistema exibe os resultados das comparações, indicando a carta vencedora para cada propriedade.
-
----
-
-Ao concluir todos os níveis, você terá criado um sistema incial para o jogo Super Trunfo, com funcionalidades de cadastro, cálculo e comparação de propriedades. 
-
-Boa sorte e divirta-se programando!
-
-Equipe de Ensino - MateCheck
+    return 0;
